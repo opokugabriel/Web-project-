@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusiVerse - Share Your Music</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1DB954;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #1DB954;
+        }
+
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 2rem;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 200px;
+        }
+
+        .dropdown-menu.show {
+            display: flex;
+        }
+
+        /* Main Content */
+        .container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Home Page */
+        .songs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .song-card {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .song-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .song-info {
+            padding: 1rem;
+        }
+
+        .song-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .song-artist {
+            color: #aaa;
+            margin-bottom: 1rem;
+        }
+
+        .song-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-play {
+            background-color: #1DB954;
+            color: white;
+        }
+
+        .btn-play:hover {
+            background-color: #1ed760;
+        }
+
+        .btn-download {
+            background-color: #333;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background-color: #444;
+        }
+
+        /* Forms */
+        .form-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 0.5rem;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 0.3rem;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            border-radius: 0.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background-color: #1ed760;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .form-footer a {
+            color: #1DB954;
+            text-decoration: none;
+        }
+
+        /* Payment Plans */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .plan-card {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: scale(1.05);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1DB954;
+        }
+
+        .plan-price {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            margin-bottom: 0.5rem;
+        }
+
+        .select-plan {
+            background-color: #1DB954;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.3rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .select-plan:hover {
+            background-color: #1ed760;
+        }
+
+        /* Payment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background-color: #333;
+            border-radius: 0.3rem;
+            cursor: pointer;
+        }
+
+        .payment-method.active {
+            background-color: #1DB954;
+        }
+
+        .payment-form {
+            display: none;
+        }
+
+        .payment-form.active {
+            display: block;
+        }
+
+        /* Player */
+        .player-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-title {
+            font-weight: bold;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            flex: 2;
+            height: 5px;
+            background-color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #1DB954;
+            border-radius: 5px;
+            width: 0%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .songs-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">MusiVerse</div>
+        <div class="nav-links">
+            <a href="#" class="nav-link" data-tab="home">Home</a>
+            <a href="#" class="nav-link" data-tab="music">Music</a>
+            <a href="#" class="nav-link" data-tab="upload">Upload</a>
+            <a href="#" class="nav-link" data-tab="about">About</a>
+        </div>
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div class="dropdown-menu" id="dropdownMenu">
+            <a href="#" class="nav-link" data-tab="home">Home</a>
+            <a href="#" class="nav-link" data-tab="music">Music</a>
+            <a href="#" class="nav-link" data-tab="upload">Upload</a>
+            <a href="#" class="nav-link" data-tab="about">About</a>
+            <a href="#" class="nav-link" data-tab="login">Login</a>
+            <a href="#" class="nav-link" data-tab="register">Register</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Home Tab -->
+        <div class="tab-content active" id="home">
+            <h1>Featured Songs</h1>
+            <div class="songs-grid" id="featuredSongs">
+                <!-- Songs will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <!-- Music Tab -->
+        <div class="tab-content" id="music">
+            <h1>All Songs</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search songs..." style="width: 100%; padding: 0.8rem; border: none; border-radius: 0.3rem; margin-bottom: 1rem;">
+            </div>
+            <div class="songs-grid" id="allSongs">
+                <!-- All songs will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <!-- Upload Tab -->
+        <div class="tab-content" id="upload">
+            <h1>Upload Your Music</h1>
+            <div class="plans-container">
+                <div class="plan-card">
+                    <h2 class="plan-name">Free Trial</h2>
+                    <div class="plan-price">$0/month</div>
+                    <ul class="plan-features">
+                        <li>Upload up to 1 songs</li>
+                        <li>Basic analytics</li>
+                        <li>Standard quality</li>
+                    </ul>
+                    <button class="select-plan" data-plan="free">Select Plan</button>
+                </div>
+                <div class="plan-card">
+                    <h2 class="plan-name">Pro</h2>
+                    <div class="plan-price">$9.99/month</div>
+                    <ul class="plan-features">
+                        <li>Upload up to 50 songs</li>
+                        <li>Advanced analytics</li>
+                        <li>High quality</li>
+                    </ul>
+                    <button class="select-plan" data-plan="pro">Select Plan</button>
+                </div>
+                <div class="plan-card">
+                    <h2 class="plan-name">Premium</h2>
+                    <div class="plan-price">$19.99/month</div>
+                    <ul class="plan-features">
+                        <li>Unlimited uploads</li>
+                        <li>Premium analytics</li>
+                        <li>Lossless quality</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <button class="select-plan" data-plan="premium">Select Plan</button>
+                </div>
+            </div>
+            <div id="uploadFormContainer" style="display: none; margin-top: 2rem;">
+                <div class="form-container">
+                    <h2 class="form-title">Upload Song</h2>
+                    <form id="uploadForm">
+                        <div class="form-group">
+                            <label for="songTitle">Song Title</label>
+                            <input type="text" id="songTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="artistName">Artist Name</label>
+                            <input type="text" id="artistName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="songFile">Song File (MP3)</label>
+                            <input type="file" id="songFile" accept=".mp3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coverImage">Cover Image</label>
+                            <input type="file" id="coverImage" accept="image/*">
+                        </div>
+                        <button type="submit" class="submit-btn">Upload Song</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div class="tab-content" id="about">
+            <h1>About MusiVerse</h1>
+            <p style="margin-top: 1rem; line-height: 1.6;">
+                MusiVerse is a platform for independent musicians to share their music with the world.
+                We provide tools for artists to upload, distribute, and monetize their music while
+                giving fans easy access to discover and enjoy new music.
+            </p>         
+            <p style="margin-top: 1rem; line-height: 1.6;">
+                Our mission is to create a fair and open music ecosystem where artists are properly
+                compensated for their work and fans can enjoy music without restrictions.
+            </p>
+             <p>
+                 <ul>
+                     CALL/WHATSAPP 
+                     <li>
+                         +233 598 854 789
+                     </li>
+                     <li>
+                         +234 906 477 9856
+                         
+                     </li>
+                 </ul>
+            </p>   
+        </div>
+
+        <!-- Login Tab -->
+        <div class="tab-content" id="login">
+            <div class="form-container">
+                <h2 class="form-title">Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+                <div class="form-footer">
+                    Don't have an account? <a href="#" class="nav-link" data-tab="register">Register</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Tab -->
+        <div class="tab-content" id="register">
+            <div class="form-container">
+                <h2 class="form-title">Register</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Confirm Password</label>
+                        <input type="password" id="registerConfirmPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Register</button>
+                </form>
+                <div class="form-footer">
+                    Already have an account? <a href="#" class="nav-link" data-tab="login">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Complete Your Subscription</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="payment-methods">
+                <div class="payment-method active" data-method="card">
+                    <i class="fas fa-credit-card"></i> Credit Card
+                </div>
+                <div class="payment-method" data-method="momo">
+                    <i class="fas fa-mobile-alt"></i> MTN MoMo
+                </div>
+            </div>
+            <form id="cardPaymentForm" class="payment-form active">
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardExpiry">Expiry Date</label>
+                    <input type="text" id="cardExpiry" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardCvc">CVC</label>
+                    <input type="text" id="cardCvc" placeholder="123" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardName">Name on Card</label>
+                    <input type="text" id="cardName" required>
+                </div>
+                <button type="submit" class="submit-btn">Pay Now</button>
+            </form>
+            <form id="momoPaymentForm" class="payment-form">
+                <div class="form-group">
+                    <label for="momoNumber">MTN Mobile Number</label>
+                    <input type="text" id="momoNumber" placeholder="0244 123 4567" required>
+                </div>
+                <div class="form-group">
+                    <label for="momoNetwork">Network</label>
+                    <select id="momoNetwork" required>
+                        <option value="MTN">MTN</option>
+                    </select>
+                </div>
+                <p style="margin: 1rem 0;">You will receive a prompt on your phone to confirm payment</p>
+                <button type="submit" class="submit-btn">Pay with MoMo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audio Player -->
+    <div class="player-container" id="playerContainer" style="display: none;">
+        <div class="player-info">
+            <div class="player-title" id="playerTitle">Now Playing: Song Title</div>
+        </div>
+        <div class="player-controls">
+            <button class="player-btn" id="prevBtn">⏮</button>
+            <button class="player-btn" id="playBtn">▶</button>
+            <button class="player-btn" id="nextBtn">⏭</button>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <audio id="audioPlayer"></audio>
+    </div>
+
+    <script>
+        // Sample data for songs
+        const songs = [
+            {
+                id: 1,
+                title: "Summer Vibes",
+                artist: "DJ Sunshine",
+                cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+            },
+            {
+                id: 2,
+                title: "Midnight Dreams",
+                artist: "Luna Star",
+                cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+            },
+            {
+                id: 3,
+                title: "Urban Groove",
+                artist: "The City Beats",
+                cover: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+            },
+            {
+                id: 4,
+                title: "Acoustic Morning",
+                artist: "Coffee & Strings",
+                cover: "https://images.unsplash.com/photo-1458560871784-56d23406c091?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+            },
+            {
+                id: 5,
+                title: "Electronic Pulse",
+                artist: "Neon Waves",
+                cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+            },
+            {
+                id: 6,
+                title: "Jazz Nights",
+                artist: "Smooth Sax",
+                cover: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+            }
+        ];
+
+        // DOM Elements
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const featuredSongsGrid = document.getElementById('featuredSongs');
+        const allSongsGrid = document.getElementById('allSongs');
+        const searchInput = document.getElementById('searchInput');
+        const uploadFormContainer = document.getElementById('uploadFormContainer');
+        const planButtons = document.querySelectorAll('.select-plan');
+        const paymentModal = document.getElementById('paymentModal');
+        const closeModal = document.getElementById('closeModal');
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        const paymentForms = document.querySelectorAll('.payment-form');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playerContainer = document.getElementById('playerContainer');
+        const playerTitle = document.getElementById('playerTitle');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Current state
+        let currentTab = 'home';
+        let currentSong = null;
+        let isPlaying = false;
+        let currentPlan = null;
+
+        // Initialize the app
+        function init() {
+            renderSongs();
+            setupEventListeners();
+        }
+
+        // Render songs to the grids
+        function renderSongs(filter = '') {
+            featuredSongsGrid.innerHTML = '';
+            allSongsGrid.innerHTML = '';
+
+            const filteredSongs = songs.filter(song => 
+                song.title.toLowerCase().includes(filter.toLowerCase()) || 
+                song.artist.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            // Featured songs (first 4)
+            filteredSongs.slice(0, 4).forEach(song => {
+                featuredSongsGrid.appendChild(createSongCard(song));
+            });
+
+            // All songs
+            filteredSongs.forEach(song => {
+                allSongsGrid.appendChild(createSongCard(song));
+            });
+        }
+
+        // Create song card element
+        function createSongCard(song) {
+            const card = document.createElement('div');
+            card.className = 'song-card';
+            card.dataset.id = song.id;
+
+            card.innerHTML = `
+                <img src="${song.cover}" alt="${song.title}" class="song-cover">
+                <div class="song-info">
+                    <h3 class="song-title">${song.title}</h3>
+                    <p class="song-artist">${song.artist}</p>
+                    <div class="song-actions">
+                        <button class="btn btn-play" data-action="play">Play</button>
+                        <button class="btn btn-download" data-action="download">Download</button>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Menu button for mobile
+            menuBtn.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Navigation tabs
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tab = link.dataset.tab;
+                    switchTab(tab);
+                    dropdownMenu.classList.remove('show');
+                });
+            });
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                renderSongs(e.target.value);
+            });
+
+            // Plan selection
+            planButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    currentPlan = e.target.dataset.plan;
+                    uploadFormContainer.style.display = 'block';
+                    // In a real app, you would show the payment modal here
+                    // paymentModal.style.display = 'flex';
+                });
+            });
+
+            // Payment modal
+            closeModal.addEventListener('click', () => {
+                paymentModal.style.display = 'none';
+            });
+
+            // Payment methods
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', (e) => {
+                    paymentMethods.forEach(m => m.classList.remove('active'));
+                    method.classList.add('active');
+                    
+                    const methodType = method.dataset.method;
+                    paymentForms.forEach(form => form.classList.remove('active'));
+                    document.getElementById(`${methodType}PaymentForm`).classList.add('active');
+                });
+            });
+
+            // Play song
+            document.addEventListener('click', (e) => {
+                if (e.target.dataset.action === 'play') {
+                    const card = e.target.closest('.song-card');
+                    const songId = parseInt(card.dataset.id);
+                    const song = songs.find(s => s.id === songId);
+                    playSong(song);
+                }
+
+                if (e.target.dataset.action === 'download') {
+                    const card = e.target.closest('.song-card');
+                    const songId = parseInt(card.dataset.id);
+                    const song = songs.find(s => s.id === songId);
+                    downloadSong(song);
+                }
+            });
+
+            // Player controls
+            playBtn.addEventListener('click', togglePlay);
+            prevBtn.addEventListener('click', playPrevious);
+            nextBtn.addEventListener('click', playNext);
+            progressContainer.addEventListener('click', setProgress);
+
+            // Audio player events
+            audioPlayer.addEventListener('timeupdate', updateProgress);
+            audioPlayer.addEventListener('ended', playNext);
+
+            // Form submissions
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+            uploadForm.addEventListener('submit', handleUpload);
+        }
+
+        // Switch between tabs
+        function switchTab(tab) {
+            // Hide all tabs
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tab).classList.add('active');
+            currentTab = tab;
+        }
+
+        // Play a song
+        function playSong(song) {
+            currentSong = song;
+            audioPlayer.src = song.file;
+            audioPlayer.play();
+            isPlaying = true;
+            playBtn.textContent = '⏸';
+            playerTitle.textContent = `Now Playing: ${song.title} - ${song.artist}`;
+            playerContainer.style.display = 'flex';
+        }
+
+        // Toggle play/pause
+        function togglePlay() {
+            if (isPlaying) {
+                audioPlayer.pause();
+                playBtn.textContent = '▶';
+            } else {
+                audioPlayer.play();
+                playBtn.textContent = '⏸';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Play previous song
+        function playPrevious() {
+            if (!currentSong) return;
+            
+            const currentIndex = songs.findIndex(s => s.id === currentSong.id);
+            const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+            playSong(songs[prevIndex]);
+        }
+
+        // Play next song
+        function playNext() {
+            if (!currentSong) return;
+            
+            const currentIndex = songs.findIndex(s => s.id === currentSong.id);
+            const nextIndex = (currentIndex + 1) % songs.length;
+            playSong(songs[nextIndex]);
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const { duration, currentTime } = audioPlayer;
+            const progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+        }
+
+        // Set progress on click
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audioPlayer.duration;
+            audioPlayer.currentTime = (clickX / width) * duration;
+        }
+
+        // Download song
+        function downloadSong(song) {
+            // In a real app, you would check if the user has permission to download
+            // and potentially charge them or track the download
+            
+            const link = document.createElement('a');
+            link.href = song.file;
+            link.download = `${song.title} - ${song.artist}.mp3`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // In a real app, you would validate and send to server
+            alert(`Login attempt with email: ${email}`);
+            
+            // For demo, just switch to home tab
+            switchTab('home');
+        }
+
+        // Handle registration
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert("Passwords don't match!");
+                return;
+            }
+            
+            // In a real app, you would validate and send to server
+            alert(`Registration for: ${name} (${email})`);
+            
+            // For demo, just switch to home tab
+            switchTab('home');
+        }
+
+        // Handle song upload
+        function handleUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('songTitle').value;
+            const artist = document.getElementById('artistName').value;
+            const songFile = document.getElementById('songFile').files[0];
+            const coverImage = document.getElementById('coverImage').files[0];
+            
+            // In a real app, you would upload files to server
+            // For demo, just add to local songs array
+            
+            const newSong = {
+                id: songs.length + 1,
+                title,
+                artist,
+                cover: coverImage ? URL.createObjectURL(coverImage) : 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+                file: songFile ? URL.createObjectURL(songFile) : 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3'
+            };
+            
+            songs.push(newSong);
+            renderSongs();
+            
+            alert(`Song "${title}" uploaded successfully!`);
+            uploadForm.reset();
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
